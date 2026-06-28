@@ -1,150 +1,195 @@
+RESTAURANTS = {
+    "Vonn's": {
+        "cuisine": "fast food",
+        "dishes": ["burgers", "cheesesteak", "nashville fried chicken"],
+        "spicy": ["mild", "spicy"],
+        "locations": ["vancouver"],
+        "settings": ["indoors", "outdoors"],
+        "note": "You MUST try their cheesesteak!",
+    },
+    "KFC": {
+        "cuisine": "fast food",
+        "dishes": ["fried chicken", "poutine"],
+        "spicy": ["mild", "spicy"],
+        "locations": ["vancouver", "richmond"],
+        "settings": ["indoors", "outdoors"],
+        "note": "Simple yet delicious fried chicken buckets.",
+    },
+    "Paramount": {
+        "cuisine": "lebanese",
+        "dishes": ["shish tawook", "mixed grill", "beef skewers", "kofta"],
+        "spicy": ["mild", "spicy"],
+        "locations": ["vancouver"],
+        "settings": ["indoors"],
+        "note": "Exceptional seasonings of Lebanese cuisine.",
+    },
+    "Uncle Sal's Shawarma": {
+        "cuisine": "lebanese",
+        "dishes": ["chicken shawarma", "beef shawarma"],
+        "spicy": ["mild", "spicy"],
+        "locations": ["richmond"],
+        "settings": ["indoors"],
+        "note": "You MUST try their chicken shawarma plate!",
+    },
+    "Spaghetti Factory": {
+        "cuisine": "italian",
+        "dishes": ["manicotti", "penne with chicken", "steamed mussels", "pesto penne", "calamari fritti"],
+        "spicy": ["mild", "spicy"],
+        "locations": ["vancouver", "richmond"],
+        "settings": ["indoors", "outdoors"],
+        "note": "Amazing spaghetti and a cozy, homely Italian dining experience.",
+    },
+    "Sushi Mura": {
+        "cuisine": "japanese",
+        "dishes": ["sushi", "seafood udon", "sashimi rolls", "shrimp tempura", "salmon gamma"],
+        "spicy": ["mild", "spicy"],
+        "locations": ["vancouver", "richmond"],
+        "settings": ["indoors"],
+        "note": "Fresh and melt-in-your-mouth sushi.",
+    },
+    "Karakoram": {
+        "cuisine": "indian",
+        "dishes": ["chicken biryani", "lamb biryani", "butter chicken", "lamb buhna", "gulabjamun"],
+        "spicy": ["spicy"],
+        "locations": ["vancouver"],
+        "settings": ["indoors"],
+        "note": "Rich flavours and spices of Indian dishes. You must try their Gulabjamun dessert!",
+    },
+    "Swad Indian Kitchen": {
+        "cuisine": "indian",
+        "dishes": ["tandoori roti", "chicken tikka", "samosa"],
+        "spicy": ["spicy"],
+        "locations": ["vancouver"],
+        "settings": ["indoors"],
+        "note": "Comfy and friendly seating with authentic Indian flavours.",
+    },
+}
 
-ques = input("Hi I will ask you a couple of questions \nto identify the best restaurant that suits you the most. Enter yes to continue or no to exit: ")
+CUISINE_OPTIONS = {
+    "a": "fast food",
+    "b": "lebanese",
+    "c": "italian",
+    "d": "japanese",
+    "e": "indian",
+}
 
+SPICY_OPTIONS = {
+    "a": "spicy",
+    "b": "mild",
+}
+
+LOCATION_OPTIONS = {
+    "a": "vancouver",
+    "b": "richmond",
+}
+
+SETTING_OPTIONS = {
+    "a": "outdoors",
+    "b": "indoors",
+}
+
+
+def prompt_choice(question: str, options: dict) -> str:
+   
+    choices_display = "\n".join(f"  {k}) {v}" for k, v in options.items())
+    while True:
+        answer = input(f"{question}\n{choices_display}\n> ").strip().lower()
+        if answer in options:
+            return options[answer]
+        valid = ", ".join(options.keys())
+        print(f"  Invalid choice. Please enter one of: {valid}\n")
+
+
+def prompt_dish(available_dishes: list[str]) -> str:
+    """Show the available dishes and prompt until the user picks a valid one."""
+    print("\nAvailable dishes:")
+    for dish in available_dishes:
+        print(f"  - {dish}")
+    while True:
+        answer = input("Enter your favourite dish from the list above:\n> ").strip().lower()
+        if answer in available_dishes:
+            return answer
+        print("  That dish isn't on the list. Please try again.\n")
+
+
+def get_dishes_for_cuisine(cuisine: str) -> list[str]:
+    """Collect all unique dishes offered by restaurants of the chosen cuisine."""
+    dishes = []
+    for restaurant in RESTAURANTS.values():
+        if restaurant["cuisine"] == cuisine:
+            for dish in restaurant["dishes"]:
+                if dish not in dishes:
+                    dishes.append(dish)
+    return dishes
+
+
+def find_restaurants(cuisine: str, dish: str, spicy: str, location: str, setting: str) -> list[tuple[str, dict]]:
+    """Return all restaurants that match every user preference."""
+    matches = []
+    for name, info in RESTAURANTS.items():
+        if (
+            info["cuisine"] == cuisine
+            and dish in info["dishes"]
+            and spicy in info["spicy"]
+            and location in info["locations"]
+            and setting in info["settings"]
+        ):
+            matches.append((name, info))
+    return matches
 
 
 def recommend():
-    #fastfood dishes
-    Kfc = ["fried chicken", "poutine"]
-    Vonns = ["burgers", "cheesesteak", "nashville fried chicken"]
+    cuisine = prompt_choice(
+        "What is your favourite type of cuisine?",
+        CUISINE_OPTIONS,
+    )
 
-    paramount = ["shish tawouk", "mixed grill", "beef skewers", "kofta"]
-    uncleshawrma = ["chicken shawarma", "beef shawarma"]
-    #italian dishes
-    spaghettifacttory = ["manicotti", "penne with chicken", "steamed mussels", "pesto penne", "calamari fritti"]
-    #japaneese dishes
-    sushimura = ["sushi", "seafood udon", "sashimi rolls", "shrimp tempura", "salmon gamma"]
-    #indian dishes
-    karakoram = ["chicken biryani", "lamb biryani", "butter chicken", "lamb buhna", "Gulabjamun (I reccomend this desert)"]
-    swanindiankitchen = ["tandori roti", "chicken tikka", "samosa"]
-  
-    #get user's favourite cusine
-    food_type = input(
-        "What is your favorite type of food:\n a) Fast food\n b) Lebanese\n c) Italian\n d) Japaneese\n e) Indian: ")
-    
-   
-
-    if food_type.strip() == "a":
-        print("Available dishes for Fast Food: ", Vonns + Kfc)
-    
-    elif food_type.strip() == "b":
-        print("Available dishes for Lebanese: ", paramount + uncleshawrma)
-    
-    elif food_type.strip() == "c":
-      print("Avaialble dishes for Italian: ", spaghettifacttory)
-   
-    elif food_type.strip() == "d":
-      print("Availble dishes for Japaneese: ", sushimura)
-
-    elif food_type.strip() == "e":
-      print("Alert: The BEST Indian cusines are ONLY available in Vancouver and indoors and spicy")
-      print("Availble dishes for indian: ", karakoram + swanindiankitchen)
-
-    else:
-        print("I don't know your preferred dishes for this food type.")
+    available_dishes = get_dishes_for_cuisine(cuisine)
+    if not available_dishes:
+        print("Sorry, no dishes found for that cuisine. Please restart and try again.")
         return
 
-    dish = input("What is your favorite dish from the list above? ")
-    spicy = input("Do you like it spicy or mild:\n a) Spicy\n b) Mild: ")
-    location = input("Would you like to go eat in:\n a) Vancouver\n b) Richmond: ")
-    setting = input("Lastly, do you like eating:\n a) Outdoors\n b) Indoors: ")
-  
+    dish = prompt_dish(available_dishes)
 
-    if (
-        food_type.strip() == "a"
-        and dish.lower().strip() in Vonns
-        and spicy.strip() in ["a", "b"]
-        and location.strip() == "a"
-        and setting.strip() in ["a", "b"]
-    ):
-      print("Vonn's is recommended for its mouthwatering burgers. You must try their cheesesteak!")
+    spicy = prompt_choice("How do you like your food?", SPICY_OPTIONS)
+    location = prompt_choice("Which city would you like to eat in?", LOCATION_OPTIONS)
+    setting = prompt_choice("Do you prefer eating indoors or outdoors?", SETTING_OPTIONS)
 
-    elif (
-      food_type.strip() == "a"
-        and dish.lower().strip() in Kfc 
-        and spicy.strip() in ["a", "b"]
-        and location.strip() in ["a", "b"]
-        and setting.strip() in ["a", "b"]
-    ):
-      print("i recommned kfc for its simple yet delcious friedchicken buckets.")
-      
+    matches = find_restaurants(cuisine, dish, spicy, location, setting)
 
-    elif (
-        food_type.strip() == "b"
-        and dish.lower().strip() in paramount 
-        and spicy.strip() in ["a", "b"]
-        and location.strip() == "a"
-        and setting.strip() == "b"
-    ):
-        print("Paramount is recommended for its exceptional seasonings of Lebanese cuisine")
-    
-    elif (
-      food_type.strip() == "b"
-      and dish.lower().strip() in uncleshawrma 
-      and spicy.strip() in ["a", "b"]
-      and location.strip() == "b"
-      and setting.strip() == "b"
-    ):
-      print("Uncle Sal's Shawarma Restaurant is a top pick for its delicious chicken and beef shawarma. You MUST try their chicken shwarma plate")
-  
-    elif (
-      food_type.strip() == "c"
-      and dish.lower().strip() in spaghettifacttory
-      and spicy.strip() in ["a", "b"]
-      and location.strip() in ["a", "b"]
-      and setting.strip() in ["a", "b"]
-    ):
-      print("Spaghetti Factory is a top pick for its amazing spaghettie and its cozy/homely Italian dining experience")
-  
-    elif (
-      food_type.strip() == "d"
-      and dish.lower().strip() in sushimura
-      and spicy.strip() in ["a", "b"]
-      and location.strip() in ["a", "b"]
-      and setting.strip() == "b"
-    ):
-        print("Sushi Mura is recommended, featuring fresh and melt-in-your-mouth sushi")
-      
-   
-    elif (
-        food_type.strip() == "d"
-        and dish.lower().strip() in sushimura
-        and spicy.strip() in ["a", "b"]
-        and location.strip() in ["a", "b"]
-        and setting.strip() == "a"):
-          print("sorry cannot recommendm a restraunt, Sushi Mura has indoor settings only, try agian.")
-   
-    elif (
-        food_type.strip() == "e"
-        and dish.lower().strip() in karakoram
-        and spicy.strip() == "a"
-        and location.strip() == "a"
-        and setting.strip() == "b"):
-          print("Karakoram is recommended, featuring the original and rich flavours and spices of indain dishes. You must try their desert")
-      
- 
-    elif (
-      food_type.strip() == "e"
-      and dish.lower().strip() in karakoram or  swanindiankitchen
-      and spicy.strip() in ("a", "b")
-      and location.strip() == "b"
-      and setting.strip() in ("a","b")
-    ):
-        print("Cannot recommend restraunts, good Indian cusines are all spicy, indoors, and in Vancouver!")
-      
-    elif (
-        food_type.strip() == "e"
-        and dish.lower().strip() in swanindiankitchen
-        and spicy.strip() in ["a", "b"]
-        and location.strip() == "a"
-        and setting.strip() == "b"):
-          print("Swad Indian Kitchen Is recommended for its comfy and friendly seatings")
-   
+    print()
+    if matches:
+        print(f"{'='*50}")
+        print(f"  {'1 match' if len(matches) == 1 else f'{len(matches)} matches'} found!")
+        print(f"{'='*50}")
+        for name, info in matches:
+            print(f"\n  Restaurant : {name}")
+            print(f"  Tip        : {info['note']}")
+        print()
     else:
-        print("sorry i dont have a reccomendation for you. Try again with different prefrences.")
+        print("Sorry, no restaurant matches all your preferences.")
+        print("Try adjusting your location, setting, or spice preference and run again.")
 
-if ques.lower() == "yes":
-    recommend()
 
-if ques.lower() == "no":
-  print("ok, bye.")
+def main():
+    print("=" * 50)
+    print("   Welcome to the Restaurant Recommender!")
+    print("=" * 50)
+
+    while True:
+        start = input("\nAnswer a few quick questions to find your ideal restaurant.\nType 'yes' to start or 'no' to exit:\n> ").strip().lower()
+        if start == "yes":
+            recommend()
+            again = input("Would you like another recommendation? (yes/no)\n> ").strip().lower()
+            if again != "yes":
+                print("\nEnjoy your meal. Goodbye!")
+                break
+        elif start == "no":
+            print("\nOk, bye!")
+            break
+        else:
+            print("Please type 'yes' or 'no'.")
+
+
+if __name__ == "__main__":
+    main()
